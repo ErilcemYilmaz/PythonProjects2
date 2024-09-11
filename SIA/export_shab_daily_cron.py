@@ -87,7 +87,7 @@ def main():
 
     end_date = datetime.now().strftime("%Y-%m-%d")
     keywords = [
-        "Archtekt, Architektur, Ingenieur, Ingenieurwesen, Generalunternehmung, Raumplanung, Bauleitung"
+        "Architekt, Architektur, Ingenieur, Ingenieurwesen, Generalunternehmung, Raumplanung, Bauleitung"
     ]
 
     complete_publications = []
