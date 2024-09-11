@@ -11,14 +11,21 @@ BASE_URL = "https://amtsblattportal.ch/api/v1/publications/xml"
 
 
 def read_config(config_file):
-    """Read configuration from the .ini file."""
     config = configparser.ConfigParser()
     config.read(config_file)
     return config
 
 
 def fetch_publication_list(params):
-    """Fetch the publication list based on the provided parameters."""
+    """
+    Fetch the publication list based on the provided parameters.
+
+    Args:
+        params (dict): Dictionary of parameters to be sent in the API request.
+
+    Returns:
+        bytes: XML content of the publication list if the request is successful, None otherwise.
+    """
     response = requests.get(BASE_URL, params=params)
     if response.status_code == 200:
         return response.content
@@ -28,7 +35,15 @@ def fetch_publication_list(params):
 
 
 def fetch_complete_publication(publication_ref):
-    """Fetch the complete publication using the ref URL."""
+    """
+    Fetch the complete publication using the ref URL.
+
+    Args:
+        publication_ref (str): Reference URL to fetch the complete publication.
+
+    Returns:
+        bytes: XML content of the complete publication if the request is successful, None otherwise.
+    """
     response = requests.get(publication_ref)
     if response.status_code == 200:
         return response.content
@@ -38,7 +53,17 @@ def fetch_complete_publication(publication_ref):
 
 
 def parse_publication_xml(xml_content, keyword):
-    """Parse the complete publication XML and extract required information."""
+    """
+    Parse the complete publication XML and extract required information.
+
+    Args:
+        xml_content (bytes): XML content of the complete publication.
+        keyword (str): Keyword used for the search.
+
+    Returns:
+        dict: Dictionary containing the extracted information.
+    """
+
     root = ElementTree.fromstring(xml_content)
     company = root.find(".//company")
     address = root.find(".//address")
@@ -60,7 +85,17 @@ def parse_publication_xml(xml_content, keyword):
 
 
 def save_to_csv(data, file_path, fieldnames):
-    """Save data to a CSV file."""
+    """
+    Save data to a CSV file.
+
+    Args:
+        data (list): List of dictionaries containing the data to be saved.
+        file_path (str): Path to the CSV file.
+        fieldnames (list): List of field names for the CSV file.
+
+    Returns:
+        None
+    """
     with open(file_path, "w", newline="", encoding="utf-8") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -68,6 +103,9 @@ def save_to_csv(data, file_path, fieldnames):
 
 
 def main():
+    """
+    Main function to fetch, parse, and save publication data to a CSV file.
+    """
     config = read_config(r"C:\coding\test_Data\results\BBF_filter_config.ini")
 
     keywords = config.get("FilterParams", "keywords").split(",")
