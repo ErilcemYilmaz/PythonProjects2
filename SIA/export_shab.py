@@ -53,7 +53,7 @@ def parse_publication_xml(xml_content, keyword):
         "houseNumber": address.findtext(".//houseNumber", ""),
         "swissZipCode": address.findtext(".//swissZipCode", ""),
         "town": address.findtext(".//town", ""),
-        "purpose": purpose.findtext(".", ""),
+        "purpose": purpose.findtext(".", "#") if purpose is not None else "#",
     }
 
     return data
@@ -85,6 +85,8 @@ def main():
     sub_rubrics = config.get("FilterParams", "subRubrics")
     publication_states = config.get("FilterParams", "publicationStates")
 
+    complete_publications = []
+
     for keyword in keywords:
         params = {
             "keyword": keyword.strip(),
@@ -94,45 +96,42 @@ def main():
             "publicationStates": publication_states,
         }
 
-    publication_list_xml = fetch_publication_list(params)
-    if publication_list_xml:
-        root = ElementTree.fromstring(publication_list_xml)
-        publication_refs = [
-            pub.get("ref") for pub in root.findall(".//publication") if pub.get("ref")
-        ]
+        publication_list_xml = fetch_publication_list(params)
+        if publication_list_xml:
+            root = ElementTree.fromstring(publication_list_xml)
+            publication_refs = [
+                pub.get("ref")
+                for pub in root.findall(".//publication")
+                if pub.get("ref")
+            ]
 
-        complete_publications = []
-        for ref in publication_refs:
-            complete_publication_xml = fetch_complete_publication(ref)
-            if complete_publication_xml:
-                publication_data = parse_publication_xml(
-                    complete_publication_xml, keyword
-                )
-                complete_publications.append(publication_data)
+            for ref in publication_refs:
+                complete_publication_xml = fetch_complete_publication(ref)
+                if complete_publication_xml:
+                    publication_data = parse_publication_xml(
+                        complete_publication_xml, keyword.strip()
+                    )
+                    complete_publications.append(publication_data)
 
-        start_date_formatted = datetime.strptime(start_date, "%Y-%m-%d").strftime(
-            "%Y%m%d"
-        )
-        end_date_formatted = datetime.strptime(end_date, "%Y-%m-%d").strftime("%Y%m%d")
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = config.get("Paths", "output_path")
-        filename = (
-            f"{timestamp}_BBF_{keyword}_{start_date_formatted}_{end_date_formatted}.csv"
-        )
-        csv_file_path = os.path.join(output_path, filename)
+    start_date_formatted = datetime.strptime(start_date, "%Y-%m-%d").strftime("%Y%m%d")
+    end_date_formatted = datetime.strptime(end_date, "%Y-%m-%d").strftime("%Y%m%d")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_path = config.get("Paths", "output_path")
+    filename = f"{timestamp}_BBF_{start_date_formatted}_{end_date_formatted}.csv"
+    csv_file_path = os.path.join(output_path, filename)
 
-        fieldnames = [
-            "keyword",
-            "company",
-            "uid",
-            "seat",
-            "street",
-            "houseNumber",
-            "swissZipCode",
-            "town",
-            "purpose",
-        ]
-        save_to_csv(complete_publications, csv_file_path, fieldnames)
+    fieldnames = [
+        "keyword",
+        "company",
+        "uid",
+        "seat",
+        "street",
+        "houseNumber",
+        "swissZipCode",
+        "town",
+        "purpose",
+    ]
+    save_to_csv(complete_publications, csv_file_path, fieldnames)
 
 
 if __name__ == "__main__":
