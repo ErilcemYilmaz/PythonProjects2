@@ -30,6 +30,11 @@ def fetch_complete_publication(publication_ref):
         return None
 
 
+def get_text(element, path):
+    """Helper function to get text from an XML element or return a default value."""
+    return element.findtext(path) if element is not None else "#"
+
+
 def parse_publication_xml(xml_content, keyword):
     """Parse the complete publication XML and extract required information."""
     root = ElementTree.fromstring(xml_content)
@@ -39,18 +44,14 @@ def parse_publication_xml(xml_content, keyword):
 
     data = {
         "keyword": keyword,
-        "company": company.findtext(".//name", "#") if company is not None else "#",
-        "uid": company.findtext(".//uid", "#") if company is not None else "#",
-        "seat": company.findtext(".//seat", "#") if company is not None else "#",
-        "street": address.findtext(".//street", "#") if address is not None else "#",
-        "houseNumber": (
-            address.findtext(".//houseNumber", "#") if address is not None else "#"
-        ),
-        "swissZipCode": (
-            address.findtext(".//swissZipCode", "#") if address is not None else "#"
-        ),
-        "town": address.findtext(".//town", "#") if address is not None else "#",
-        "purpose": purpose.findtext(".", "#") if purpose is not None else "#",
+        "company": get_text(company, ".//name"),
+        "uid": get_text(company, ".//uid"),
+        "seat": get_text(company, ".//seat"),
+        "street": get_text(address, ".//street"),
+        "houseNumber": get_text(address, ".//houseNumber"),
+        "swissZipCode": get_text(address, ".//swissZipCode"),
+        "town": get_text(address, ".//town"),
+        "purpose": get_text(purpose, "."),
     }
 
     return data
@@ -65,7 +66,10 @@ def save_to_csv(data, file_path, fieldnames):
 
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) == 3:
+        start_date = sys.argv[1]
+        output_path = sys.argv[2]
+    else:
         start_date = input(
             "Enter start date (YYYY-MM-DD) or press Enter to use current date: "
         )
@@ -75,9 +79,6 @@ def main():
         if not output_path:
             print("Output path is required.")
             sys.exit(1)
-    else:
-        start_date = sys.argv[1]
-        output_path = sys.argv[2]
 
     try:
         datetime.strptime(start_date, "%Y-%m-%d")
