@@ -78,14 +78,8 @@ def process_row(row, fetch_data_func, *fetch_args):
 def process_row_uid(row, fetch_data_func, *fetch_args):
     """
     Process a row of data by fetching additional information from the Zefix API.
+    Specifically for fetching data by UID.
 
-    Args:
-        row (dict): A dictionary representing a row of data.
-        fetch_data_func (function): The function to fetch data from the API.
-        fetch_args (tuple): Additional arguments for the fetch_data_func.
-
-    Returns:
-        list: A list of dictionaries, each representing an updated row of data.
     """
     data, success = fetch_data_func(*fetch_args)
     if success:
@@ -125,14 +119,8 @@ def process_row_uid(row, fetch_data_func, *fetch_args):
 def process_row_with_city_check(row, fetch_data_func, *fetch_args):
     """
     Process a row of data by fetching additional information from the Zefix API and checking the city.
+    Specifically for fetching data by name and checking the city.
 
-    Args:
-        row (dict): A dictionary representing a row of data.
-        fetch_data_func (function): The function to fetch data from the API.
-        fetch_args (tuple): Additional arguments for the fetch_data_func.
-
-    Returns:
-        list: A list of dictionaries, each representing an updated row of data.
     """
     data, success = fetch_data_func(*fetch_args)
     if success:

@@ -7,6 +7,15 @@ from .utils import fetch_data_from_api, process_row_with_city_check
 
 
 def fetch_data(name):
+    """
+    Fetch data from the Zefix API based on the company name.
+
+    Args:
+        name (str): The name of the company to search for.
+
+    Returns:
+        tuple: A tuple containing the data returned from the API and a boolean indicating the success of the request.
+    """
     params = {"name": name, "activeOnly": "true"}
     return fetch_data_from_api(session, api_endpoint, params)
 
