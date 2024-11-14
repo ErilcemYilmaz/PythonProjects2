@@ -23,7 +23,7 @@ def run_export_by_name_and_legal_seat_id():
 
 def run_export_by_uid():
     export_by_uid.compare_and_update(
-        r"C:\coding\test_Data\artikel5_maöil_uid.csv",
+        r"C:\coding\test_Data\artikel5_mail_uid.csv",
         r"C:\coding\test_Data\results\20241112_artikel5_mail_uid_results.csv",
     )
 
